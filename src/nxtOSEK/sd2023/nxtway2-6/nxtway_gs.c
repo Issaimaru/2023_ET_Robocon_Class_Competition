@@ -8,7 +8,7 @@
 #include "balancer.h"
 #include "nxt_config.h"
 #include "math.h"
-// ƒvƒƒgƒ^ƒCƒvéŒ¾
+// ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
 void wait_touch(int);
 void light_calibration(void);
 void trace_control(void);
@@ -245,11 +245,13 @@ TASK(Task_Background)
   cmd_forward = 0;
 
   light_calibration();
-  tail_target = 103; n=62;
+  tail_target = 108; n=62;
 
   //wait_touch(500);
   while(sonar_distance > 30){
-    systick_wait_ms(1000U);}
+    systick_wait_ms(1000U);
+  }
+	
   nxtway_gs_mode = INIT_MODE;
   systick_wait_ms(1000U);
 	
@@ -259,13 +261,26 @@ TASK(Task_Background)
 	
 
 
-  cmd_forward = 54;
-	kp = 1.40;
+  cmd_forward = 60;
+	kp = 1.35;
     ki = 0.00001;
     kd = 14.000;
-  systick_wait_ms(30U);
- 
-     while(sonar_distance>30){
+  systick_wait_ms(9000U);
+	
+	 cmd_forward = 125;
+ 	systick_wait_ms(10000U);
+	
+	 cmd_forward = 50;
+	kp = 1.50;
+    ki = 0.00001;
+    kd = 14.000;
+ 	systick_wait_ms(600000U);
+	
+	 while(sonar_distance > 30){
+    systick_wait_ms(300U);
+  }
+}
+    /* while(sonar_distance>30){
      	 systick_wait_ms(300U);
   } 
    	kp = 1.20;
@@ -380,7 +395,7 @@ tail_target = 101; n=65;
     systick_wait_ms(300U);
   }
 
-}
+}*/
 
 void wait_touch(int freq){
   while(ecrobot_get_touch_sensor(PORT_TOUCH)==0){systick_wait_ms(100U);}  //wait for pushing switch
