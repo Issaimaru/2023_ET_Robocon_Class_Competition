@@ -8,7 +8,7 @@
 #include "balancer.h"
 #include "nxt_config.h"
 #include "math.h"
-// ƒvƒƒgƒ^ƒCƒvéŒ¾
+// ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
 void wait_touch(int);
 void light_calibration(void);
 void trace_control(void);
@@ -236,6 +236,7 @@ TASK(Task_100ms)
   TerminateTask(); 
 }
 
+
 void sound(int freq,int duration,int volume){//”ÍˆÍ 31-2100[Hz]C256(2.56[sec])C0-100
     ecrobot_sound_tone(freq,duration,volume); //‰¹‚ğo‚·‚æ
 }
@@ -278,6 +279,7 @@ void seesaw(){
 
     cmd_forward=60;
     int edge_distance=odd_distance;//ƒV[ƒ\[‚Ì’[‚ÌˆÊ’u‚ğ”cˆ¬
+	
     while((odd_distance-edge_distance)<600){
       systick_wait_ms(100U);
     }
