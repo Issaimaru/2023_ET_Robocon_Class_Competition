@@ -8,7 +8,7 @@
 #include "balancer.h"
 #include "nxt_config.h"
 #include "math.h"
-// �v���g�^�C�v�錾
+// プロトタイプ宣言
 void wait_touch(int);
 void light_calibration(void);
 void trace_control(void);
@@ -147,6 +147,7 @@ TASK(Task_20ms)
 {
   trace_control();
   tail_control();
+	oddmetry();
   TerminateTask(); 
 }
 
@@ -235,6 +236,7 @@ TASK(Task_100ms)
   TerminateTask(); 
 }
 
+
 void sound(int freq,int duration,int volume){//範囲 31-2100[Hz]，256(2.56[sec])，0-100
     ecrobot_sound_tone(freq,duration,volume); //音を出すよ
 }
@@ -244,14 +246,16 @@ void seesaw(){
     
     while(distance>30){//ゲートの直前まで進むよ
         systick_wait_ms(100U);
+    	display_goto_xy(0,2); display_int(distance, 6); display_update();
         distance=ecrobot_get_sonar_sensor(PORT_SONAR);//超音波センサから距離を取得
     }
     sound(500,100,100);//音を出して知らせるよ
     int gate_distance=distance;//ゲートの位置を把握
     
-    int seesaw_distance=700;//ゲートからシーソーまでの距離[cm]
+    int seesaw_distance=300;//ゲートからシーソーまでの距離[cm]
     cmd_forward = 60; //速度の変更
-    while((odd_distance-gate_distance) < seesaw_distance){//シーソーの直前まで進む
+    while(-(odd_distance-gate_distance) < seesaw_distance){//シーソーの直前まで進む
+    	display_goto_xy(0,2); display_int(-((odd_distance-gate_distance)), 6); display_update();
         systick_wait_ms(100U);
     }
     sound(800,100,100);//音を出して知らせるよ
@@ -265,16 +269,17 @@ void seesaw(){
     cmd_forward=0;
     systick_wait_ms(3000U);//苦しみの得点狙い
     cmd_forward=30;
-    sound(1600,100,100)//音を出して知らせるよ
+    sound(1600,100,100);//音を出して知らせるよ
     
     int centor_distance=odd_distance;//中心の位置を把握
     while((odd_distance-centor_distance)<200){//シーソーを下りるまで進む
         systick_wait_ms(100U); 
     }
-    sound(2000,100,100)//音を出して知らせるよ
+    sound(2000,100,100);//音を出して知らせるよ
 
     cmd_forward=60;
     int edge_distance=odd_distance;//シーソーの端の位置を把握
+	
     while((odd_distance-edge_distance)<600){
       systick_wait_ms(100U);
     }
@@ -304,8 +309,22 @@ TASK(Task_Background)
 	
   trace_mode = TRACE_ON;
 	
+	//ここまで準備
+	
+	cmd_forward = 0;
+	kp = 1.35;
+    ki = 0.00001;
+    kd = 14.000;
+	
+	systick_wait_ms(2000U);
+	
+	seesaw();//シーソー関数
+	
+	while(1){
+		systick_wait_ms(300U);
+	}
 
-
+/*
   cmd_forward = 60;
 	kp = 0.65;
     ki = 0.00001;
@@ -326,7 +345,9 @@ TASK(Task_Background)
 	
 	 while(sonar_distance > 30){
     systick_wait_ms(300U);
+	 //鈴木関数
   }
+*/
 }
     /* while(sonar_distance>30){
      	 systick_wait_ms(300U);
