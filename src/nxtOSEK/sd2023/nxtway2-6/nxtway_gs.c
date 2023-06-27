@@ -1,4 +1,4 @@
- /* Linetrace program
+/* Linetrace program
   PID control
   stanging start with tail bar
   */
@@ -8,7 +8,7 @@
 #include "balancer.h"
 #include "nxt_config.h"
 #include "math.h"
-// ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
+// ƒvƒƒgƒ^ƒCƒvéŒ¾
 void wait_touch(int);
 void light_calibration(void);
 void trace_control(void);
@@ -245,7 +245,7 @@ TASK(Task_Background)
   cmd_forward = 0;
 
   light_calibration();
-  tail_target = 108; n=62;
+  tail_target = 109; n=62;
 
   //wait_touch(500);
   while(sonar_distance > 30){
@@ -262,16 +262,19 @@ TASK(Task_Background)
 
 
   cmd_forward = 60;
-	kp = 1.35;
+	kp = 0.65;
     ki = 0.00001;
     kd = 14.000;
   systick_wait_ms(9000U);
+	kp = 0.90;
+    ki = 0.00001;
+    kd = 14.000;
+	 cmd_forward = 122;
+ 	systick_wait_ms(11000U);
 	
-	 cmd_forward = 125;
- 	systick_wait_ms(10000U);
-	
-	 cmd_forward = 50;
-	kp = 1.50;
+	trace_target = 480;
+	 cmd_forward = 40;
+	kp = 1.25;
     ki = 0.00001;
     kd = 14.000;
  	systick_wait_ms(600000U);
