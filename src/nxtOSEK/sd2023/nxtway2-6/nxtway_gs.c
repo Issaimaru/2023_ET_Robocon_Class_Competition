@@ -8,7 +8,7 @@
 #include "balancer.h"
 #include "nxt_config.h"
 #include "math.h"
-// プロトタイプ宣言
+// �v���g�^�C�v�錾
 void wait_touch(int);
 void light_calibration(void);
 void trace_control(void);
@@ -117,12 +117,22 @@ const float wheel_dia = 85.0;
 const float tread = 163;
 float odd_distance;
 float robot_a;
+int a;
+double b;
+int c;
+int d;
+
 void
 oddmetry(void){
   int theta_r = nxt_motor_get_count(PORT_MOTOR_R);
   int theta_l = nxt_motor_get_count(PORT_MOTOR_L);
   odd_distance =((theta_r + theta_l) * 0.5 * 0.008726 * wheel_dia);
   robot_a = (theta_r - theta_l) * wheel_dia / tread;
+	if(c == 4 && ((d % 5) == 0 )){
+		b +=robot_a;
+		a++;
+		ecrobot_sound_tone(1200,100,50);
+	}
 }
 
 float position_x = 0.0;
@@ -236,21 +246,20 @@ TASK(Task_100ms)
   TerminateTask(); 
 }
 
-
 void sound(int freq,int duration,int volume){//範囲 31-2100[Hz]，256(2.56[sec])，0-100
     ecrobot_sound_tone(freq,duration,volume); //音を出すよ
 }
 
 void seesaw(){
-    int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//超音波センサから距離を取得
+    int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//�����g�Z���T���狗����擾
     
-    while(distance>30){//ゲートの直前まで進むよ
+    while(distance>30){//�Q�[�g�̒��O�܂Ői�ނ�
         systick_wait_ms(100U);
     	display_goto_xy(0,2); display_int(distance, 6); display_update();
         distance=ecrobot_get_sonar_sensor(PORT_SONAR);//超音波センサから距離を取得
     }
-    sound(500,100,100);//音を出して知らせるよ
-    int gate_distance=distance;//ゲートの位置を把握
+    sound(500,100,100);//����o���Ēm�点���
+    int gate_distance=distance;//�Q�[�g�̈ʒu��c��
     
     int seesaw_distance=300;//ゲートからシーソーまでの距離[cm]
     cmd_forward = 60; //速度の変更
@@ -258,31 +267,75 @@ void seesaw(){
     	display_goto_xy(0,2); display_int(-((odd_distance-gate_distance)), 6); display_update();
         systick_wait_ms(100U);
     }
-    sound(800,100,100);//音を出して知らせるよ
-    seesaw_distance=odd_distance;//シーソーの位置を把握
+    sound(800,100,100);//����o���Ēm�点���
+    seesaw_distance=odd_distance;//�V�[�\�[�̈ʒu��c��
     
-    while((odd_distance-seesaw_distance)<100){//シーソーの中心まで進む
+    while((odd_distance-seesaw_distance)<100){//�V�[�\�[�̒��S�܂Ői��
         systick_wait_ms(100U);  
     }
-    sound(1200,100,100);//音を出して知らせるよ
+    sound(1200,100,100);//����o���Ēm�点���
     
     cmd_forward=0;
-    systick_wait_ms(3000U);//苦しみの得点狙い
+    systick_wait_ms(3000U);//�ꂵ�݂̓��_�_��
     cmd_forward=30;
     sound(1600,100,100);//音を出して知らせるよ
     
-    int centor_distance=odd_distance;//中心の位置を把握
-    while((odd_distance-centor_distance)<200){//シーソーを下りるまで進む
+    int centor_distance=odd_distance;//���S�̈ʒu��c��
+    while((odd_distance-centor_distance)<200){//�V�[�\�[����܂Ői��
         systick_wait_ms(100U); 
     }
     sound(2000,100,100);//音を出して知らせるよ
 
     cmd_forward=60;
     int edge_distance=odd_distance;//シーソーの端の位置を把握
-	
+
     while((odd_distance-edge_distance)<600){
       systick_wait_ms(100U);
     }
+}
+
+void Groping(){
+	cmd_forward=60;
+	systick_wait_ms(5000U);
+	while(1){
+		if(sonar_distance < 50){
+			ecrobot_sound_tone(440,100,50);
+			c++;
+			break;
+		}
+	    else
+		systick_wait_ms(100U);
+	}
+	
+	cmd_forward=40;
+	while(1){
+		if(sonar_distance > 25){
+			systick_wait_ms(100U);
+			d++;
+		}
+		else{
+			ecrobot_sound_tone(440,100,50);
+			break;
+		}
+	}
+	
+	cmd_forward=60;
+	robot_b = b/a;
+	systick_wait_ms(1000U);
+	trace_mode = TRACE_OFF;
+	direction_target = (robot_b);
+	direction_mode = DIRECTION_ON;
+	systick_wait_ms(4000U);
+	
+	while(1){
+		if(sonar_distance > 30)
+		systick_wait_ms(100U);
+		else{
+			ecrobot_sound_tone(440,100,50);
+			systick_wait_ms(3000U);
+			break;
+		}
+	}
 }
 
 TASK(Task_Background)
