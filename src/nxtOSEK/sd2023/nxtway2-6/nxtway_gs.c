@@ -117,12 +117,22 @@ const float wheel_dia = 85.0;
 const float tread = 163;
 float odd_distance;
 float robot_a;
+int a;
+double b;
+int c;
+int d;
+
 void
 oddmetry(void){
   int theta_r = nxt_motor_get_count(PORT_MOTOR_R);
   int theta_l = nxt_motor_get_count(PORT_MOTOR_L);
   odd_distance =((theta_r + theta_l) * 0.5 * 0.008726 * wheel_dia);
   robot_a = (theta_r - theta_l) * wheel_dia / tread;
+	if(c == 4 && ((d % 5) == 0 )){
+		b +=robot_a;
+		a++;
+		ecrobot_sound_tone(1200,100,50);
+	}
 }
 
 float position_x = 0.0;
@@ -147,7 +157,8 @@ TASK(Task_20ms)
 {
   trace_control();
   tail_control();
-  TerminateTask(); 
+  TerminateTask();
+	oddmetry();
 }
 
 int trace_target;
@@ -235,49 +246,93 @@ TASK(Task_100ms)
   TerminateTask(); 
 }
 
-void sound(int freq,int duration,int volume){//ç¯„å›² 31-2100[Hz]ï¼Œ256(2.56[sec])ï¼Œ0-100
-    ecrobot_sound_tone(freq,duration,volume); //éŸ³ã‚’å‡ºã™ã‚ˆ
+void sound(int freq,int duration,int volume){//”ÍˆÍ 31-2100[Hz]C256(2.56[sec])C0-100
+    ecrobot_sound_tone(freq,duration,volume); //‰¹‚ğo‚·‚æ
 }
 
 void seesaw(){
-    int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//è¶…éŸ³æ³¢ã‚»ãƒ³ã‚µã‹ã‚‰è·é›¢ã‚’å–å¾—
+    int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//’´‰¹”gƒZƒ“ƒT‚©‚ç‹——£‚ğæ“¾
     
-    while(distance>30){//ã‚²ãƒ¼ãƒˆã®ç›´å‰ã¾ã§é€²ã‚€ã‚ˆ
+    while(distance>30){//ƒQ[ƒg‚Ì’¼‘O‚Ü‚Åi‚Ş‚æ
         systick_wait_ms(100U);
-        distance=ecrobot_get_sonar_sensor(PORT_SONAR);//è¶…éŸ³æ³¢ã‚»ãƒ³ã‚µã‹ã‚‰è·é›¢ã‚’å–å¾—
+        distance=ecrobot_get_sonar_sensor(PORT_SONAR);//’´‰¹”gƒZƒ“ƒT‚©‚ç‹——£‚ğæ“¾
     }
-    sound(500,100,100);//éŸ³ã‚’å‡ºã—ã¦çŸ¥ã‚‰ã›ã‚‹ã‚ˆ
-    int gate_distance=distance;//ã‚²ãƒ¼ãƒˆã®ä½ç½®ã‚’æŠŠæ¡
+    sound(500,100,100);//‰¹‚ğo‚µ‚Ä’m‚ç‚¹‚é‚æ
+    int gate_distance=distance;//ƒQ[ƒg‚ÌˆÊ’u‚ğ”cˆ¬
     
-    int seesaw_distance=700;//ã‚²ãƒ¼ãƒˆã‹ã‚‰ã‚·ãƒ¼ã‚½ãƒ¼ã¾ã§ã®è·é›¢[cm]
-    cmd_forward = 60; //é€Ÿåº¦ã®å¤‰æ›´
-    while((odd_distance-gate_distance) < seesaw_distance){//ã‚·ãƒ¼ã‚½ãƒ¼ã®ç›´å‰ã¾ã§é€²ã‚€
+    int seesaw_distance=700;//ƒQ[ƒg‚©‚çƒV[ƒ\[‚Ü‚Å‚Ì‹——£[cm]
+    cmd_forward = 60; //‘¬“x‚Ì•ÏX
+    while((odd_distance-gate_distance) < seesaw_distance){//ƒV[ƒ\[‚Ì’¼‘O‚Ü‚Åi‚Ş
         systick_wait_ms(100U);
     }
-    sound(800,100,100);//éŸ³ã‚’å‡ºã—ã¦çŸ¥ã‚‰ã›ã‚‹ã‚ˆ
-    seesaw_distance=odd_distance;//ã‚·ãƒ¼ã‚½ãƒ¼ã®ä½ç½®ã‚’æŠŠæ¡
+    sound(800,100,100);//‰¹‚ğo‚µ‚Ä’m‚ç‚¹‚é‚æ
+    seesaw_distance=odd_distance;//ƒV[ƒ\[‚ÌˆÊ’u‚ğ”cˆ¬
     
-    while((odd_distance-seesaw_distance)<100){//ã‚·ãƒ¼ã‚½ãƒ¼ã®ä¸­å¿ƒã¾ã§é€²ã‚€
+    while((odd_distance-seesaw_distance)<100){//ƒV[ƒ\[‚Ì’†S‚Ü‚Åi‚Ş
         systick_wait_ms(100U);  
     }
-    sound(1200,100,100);//éŸ³ã‚’å‡ºã—ã¦çŸ¥ã‚‰ã›ã‚‹ã‚ˆ
+    sound(1200,100,100);//‰¹‚ğo‚µ‚Ä’m‚ç‚¹‚é‚æ
     
     cmd_forward=0;
-    systick_wait_ms(3000U);//è‹¦ã—ã¿ã®å¾—ç‚¹ç‹™ã„
+    systick_wait_ms(3000U);//‹ê‚µ‚İ‚Ì“¾“_‘_‚¢
     cmd_forward=30;
-    sound(1600,100,100)//éŸ³ã‚’å‡ºã—ã¦çŸ¥ã‚‰ã›ã‚‹ã‚ˆ
+    sound(1600,100,100)//‰¹‚ğo‚µ‚Ä’m‚ç‚¹‚é‚æ
     
-    int centor_distance=odd_distance;//ä¸­å¿ƒã®ä½ç½®ã‚’æŠŠæ¡
-    while((odd_distance-centor_distance)<200){//ã‚·ãƒ¼ã‚½ãƒ¼ã‚’ä¸‹ã‚Šã‚‹ã¾ã§é€²ã‚€
+    int centor_distance=odd_distance;//’†S‚ÌˆÊ’u‚ğ”cˆ¬
+    while((odd_distance-centor_distance)<200){//ƒV[ƒ\[‚ğ‰º‚è‚é‚Ü‚Åi‚Ş
         systick_wait_ms(100U); 
     }
-    sound(2000,100,100)//éŸ³ã‚’å‡ºã—ã¦çŸ¥ã‚‰ã›ã‚‹ã‚ˆ
+    sound(2000,100,100)//‰¹‚ğo‚µ‚Ä’m‚ç‚¹‚é‚æ
 
     cmd_forward=60;
-    int edge_distance=odd_distance;//ã‚·ãƒ¼ã‚½ãƒ¼ã®ç«¯ã®ä½ç½®ã‚’æŠŠæ¡
+    int edge_distance=odd_distance;//ƒV[ƒ\[‚Ì’[‚ÌˆÊ’u‚ğ”cˆ¬
     while((odd_distance-edge_distance)<600){
       systick_wait_ms(100U);
     }
+}
+
+void Groping(){
+	cmd_forward=60;
+	systick_wait_ms(5000U);
+	while(1){
+		if(sonar_distance < 50){
+			ecrobot_sound_tone(440,100,50);
+			c++;
+			break;
+		}
+	    else
+		systick_wait_ms(100U);
+	}
+	
+	cmd_forward=40;
+	while(1){
+		if(sonar_distance > 25){
+			systick_wait_ms(100U);
+			d++;
+		}
+		else{
+			ecrobot_sound_tone(440,100,50);
+			break;
+		}
+	}
+	
+	cmd_forward=60;
+	robot_b = b/a;
+	systick_wait_ms(1000U);
+	trace_mode = TRACE_OFF;
+	direction_target = (robot_b);
+	direction_mode = DIRECTION_ON;
+	systick_wait_ms(4000U);
+	
+	while(1){
+		if(sonar_distance > 30)
+		systick_wait_ms(100U);
+		else{
+			ecrobot_sound_tone(440,100,50);
+			systick_wait_ms(3000U);
+			break;
+		}
+	}
 }
 
 TASK(Task_Background)
@@ -290,7 +345,7 @@ TASK(Task_Background)
   cmd_forward = 0;
 
   light_calibration();
-  tail_target = 109; n=62;
+  tail_target = 108; n=62;
 
   //wait_touch(500);
   while(sonar_distance > 30){
@@ -307,19 +362,16 @@ TASK(Task_Background)
 
 
   cmd_forward = 60;
-	kp = 0.65;
+	kp = 1.35;
     ki = 0.00001;
     kd = 14.000;
   systick_wait_ms(9000U);
-	kp = 0.90;
-    ki = 0.00001;
-    kd = 14.000;
-	 cmd_forward = 122;
- 	systick_wait_ms(11000U);
 	
-	trace_target = 480;
-	 cmd_forward = 40;
-	kp = 1.25;
+	 cmd_forward = 125;
+ 	systick_wait_ms(10000U);
+	
+	 cmd_forward = 50;
+	kp = 1.50;
     ki = 0.00001;
     kd = 14.000;
  	systick_wait_ms(600000U);
