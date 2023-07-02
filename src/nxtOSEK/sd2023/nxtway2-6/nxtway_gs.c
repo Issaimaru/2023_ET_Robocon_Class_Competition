@@ -377,7 +377,6 @@ TASK(Task_Background)
 		systick_wait_ms(300U);
 	}
 
-/*
   cmd_forward = 60;
 	kp = 0.65;
     ki = 0.00001;
@@ -400,7 +399,6 @@ TASK(Task_Background)
     systick_wait_ms(300U);
 	 //鈴木関数
   }
-*/
 }
     /* while(sonar_distance>30){
      	 systick_wait_ms(300U);
