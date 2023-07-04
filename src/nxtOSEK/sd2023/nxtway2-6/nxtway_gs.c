@@ -2,13 +2,15 @@
   PID control
   stanging start with tail bar
   */
+  /* User:Issaimaru*/
 #include "kernel.h"
 #include "kernel_id.h"
 #include "ecrobot_interface.h"
 #include "balancer.h"
 #include "nxt_config.h"
 #include "math.h"
-// �v���g�^�C�v�錾
+
+// プロトタイプ宣言
 void wait_touch(int);
 void light_calibration(void);
 void trace_control(void);
@@ -236,53 +238,53 @@ TASK(Task_100ms)
   TerminateTask(); 
 }
 
-/*void sound(int freq,int duration,int volume){//�͈� 31-2100[Hz]�C256(2.56[sec])�C0-100
-    ecrobot_sound_tone(freq,duration,volume); //�����o����
+void sound(int freq,int duration,int volume){//範囲 31-2100[Hz]，256(2.56[sec])，0-100
+    ecrobot_sound_tone(freq,duration,volume); //音を出すよ
 }
 
 void seesaw(){
-    int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//�����g�Z���T���狗����擾
+    int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//超音波センサから距離を取得
     
-    while(distance>30){//�Q�[�g�̒��O�܂Ői�ނ�
+    while(distance>30){//ゲートの直前まで進むよ
         systick_wait_ms(100U);
     	display_goto_xy(0,2); display_int(distance, 6); display_update();
         distance=ecrobot_get_sonar_sensor(PORT_SONAR);//超音波センサから距離を取得
     }
-    sound(500,100,100);//����o���Ēm�点���
-    int gate_distance=distance;//�Q�[�g�̈ʒu��c��
+    sound(500,100,100);//音を出して知らせるよ
+    int gate_distance=odd_distance;//ゲートの位置を把握
     
-    int seesaw_distance=300;//ゲートからシーソーまでの距離[cm]
-    cmd_forward = 60; //速度の変更
-    while(-(odd_distance-gate_distance) < seesaw_distance){//シーソーの直前まで進む
-    	display_goto_xy(0,2); display_int(-((odd_distance-gate_distance)), 6); display_update();
+    int seesaw_distance=650;//ゲートからシーソーまでの距離[cm]
+    cmd_forward = 85; //速度の変更
+    while((odd_distance-gate_distance) < seesaw_distance){//シーソーの直前まで進む
+    	display_goto_xy(0,2); display_int(((odd_distance-gate_distance)), 6); display_update();
         systick_wait_ms(100U);
     }
-    sound(800,100,100);//����o���Ēm�点���
-    seesaw_distance=odd_distance;//�V�[�\�[�̈ʒu��c��
+  
+    sound(800,100,100);//音を出して知らせるよ
+    seesaw_distance=odd_distance;//シーソーの位置を把握
     
-    while((odd_distance-seesaw_distance)<100){//�V�[�\�[�̒��S�܂Ői��
+    while((odd_distance-seesaw_distance)<200){//シーソーの中心まで進む
         systick_wait_ms(100U);  
     }
-    sound(1200,100,100);//����o���Ēm�点���
-    
-    cmd_forward=0;
-    systick_wait_ms(3000U);//�ꂵ�݂̓��_�_��
     cmd_forward=30;
     sound(1600,100,100);//音を出して知らせるよ
     
-    int centor_distance=odd_distance;//���S�̈ʒu��c��
-    while((odd_distance-centor_distance)<200){//�V�[�\�[����܂Ői��
+    int centor_distance=odd_distance;//中心の位置を把握
+    while((odd_distance-centor_distance)<400){//シーソーを下りるまで進む
         systick_wait_ms(100U); 
     }
     sound(2000,100,100);//音を出して知らせるよ
-
-    cmd_forward=60;
+    cmd_forward=70;
     int edge_distance=odd_distance;//シーソーの端の位置を把握
-
+	
     while((odd_distance-edge_distance)<600){
       systick_wait_ms(100U);
     }
-}*/
+	kp = 0.65;
+    ki = 0.00001;
+    kd = 14.000;
+	cmd_forward=30;
+}
 
 void Groping(){
 	if(sonar_distance<=70){
@@ -353,7 +355,7 @@ TASK(Task_Background)
 	
 	//ここまで準備
 	
-	cmd_forward = 0;
+	cmd_forward = 30;
 	kp = 1.35;
     ki = 0.00001;
     kd = 14.000;
