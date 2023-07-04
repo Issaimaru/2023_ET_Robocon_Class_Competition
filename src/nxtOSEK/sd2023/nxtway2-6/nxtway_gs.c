@@ -1,4 +1,4 @@
-/* Linetrace program
+ /* Linetrace program
   PID control
   stanging start with tail bar
   */
@@ -246,7 +246,7 @@ TASK(Task_100ms)
   TerminateTask(); 
 }
 
-void sound(int freq,int duration,int volume){//範囲 31-2100[Hz]，256(2.56[sec])，0-100
+/*void sound(int freq,int duration,int volume){//範囲 31-2100[Hz]，256(2.56[sec])，0-100
     ecrobot_sound_tone(freq,duration,volume); //音を出すよ
 }
 
@@ -289,50 +289,49 @@ void seesaw(){
     while((odd_distance-edge_distance)<600){
       systick_wait_ms(100U);
     }
-}
+}*/
 
 void Groping(){
-	cmd_forward=60;
-	systick_wait_ms(5000U);
-	while(1){
-		if(sonar_distance < 50){
-			ecrobot_sound_tone(440,100,50);
-			c++;
-			break;
-		}
-	    else
-		systick_wait_ms(100U);
+	if(sonar_distance<=70){
+		nxt_motor_set_count(PORT_MOTOR_L,0);
+		nxt_motor_set_count(PORT_MOTOR_R,0);
+		position_x = 0.0;
+		position_y = 0.0;
+		cmd_forward = 30;
+		systick_wait_ms(1000U);
+		ecrobot_sound_tone(700U,500U,50U);
 	}
 	
-	cmd_forward=40;
-	while(1){
-		if(sonar_distance > 25){
-			systick_wait_ms(100U);
-			d++;
-		}
-		else{
-			ecrobot_sound_tone(440,100,50);
-			break;
-		}
+	systick_wait_ms(1800U);
+	float robot_a1 = atan((position_y)/(position_x));
+	ecrobot_sound_tone(500U,500U,50U);
+	
+	systick_wait_ms(1800U);
+	float robot_a2 = atan((position_y)/(position_x));
+	ecrobot_sound_tone(600U,500U,50U);
+	
+	systick_wait_ms(1800U);
+	float robot_a3 = atan((position_y)/(position_x));
+	ecrobot_sound_tone(700U,500U,50U);
+	
+	while(sonar_distance>30){
+		systick_wait_ms(200U);
 	}
 	
-	cmd_forward=60;
-	robot_b = b/a;
-	systick_wait_ms(1000U);
+	ecrobot_sound_tone(1500U,500U,50U);
 	trace_mode = TRACE_OFF;
-	direction_target = (robot_b);
+	direction_target = 0;
+	robot_a = ((robot_a1)+(robot_a2)+(robot_a3))/3.0;
 	direction_mode = DIRECTION_ON;
-	systick_wait_ms(4000U);
+	systick_wait_ms(500U);
+	cmd_forward = 30;
+	odd_distance = 0.0;
 	
-	while(1){
-		if(sonar_distance > 30)
-		systick_wait_ms(100U);
-		else{
-			ecrobot_sound_tone(440,100,50);
-			systick_wait_ms(3000U);
-			break;
-		}
-	}
+	systick_wait_ms(11800U);
+	
+	ecrobot_sound_tone(700U,500U,50U);
+	trace_mode = TRACE_ON;
+	cmd_forward = 30;
 }
 
 TASK(Task_Background)
