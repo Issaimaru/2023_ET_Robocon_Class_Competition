@@ -2,13 +2,14 @@
   PID control
   stanging start with tail bar
   */
+  /* User:Issaimaru*/
 #include "kernel.h"
 #include "kernel_id.h"
 #include "ecrobot_interface.h"
 #include "balancer.h"
 #include "nxt_config.h"
 #include "math.h"
-// ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
+// ƒvƒƒgƒ^ƒCƒvéŒ¾
 void wait_touch(int);
 void light_calibration(void);
 void trace_control(void);
@@ -237,52 +238,53 @@ TASK(Task_100ms)
 }
 
 
-void sound(int freq,int duration,int volume){//ç¯„å›² 31-2100[Hz]ï¼Œ256(2.56[sec])ï¼Œ0-100
-    ecrobot_sound_tone(freq,duration,volume); //éŸ³ã‚’å‡ºã™ã‚ˆ
+void sound(int freq,int duration,int volume){//”ÍˆÍ 31-2100[Hz]C256(2.56[sec])C0-100
+    ecrobot_sound_tone(freq,duration,volume); //‰¹‚ğo‚·‚æ
 }
 
 void seesaw(){
-    int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//è¶…éŸ³æ³¢ã‚»ãƒ³ã‚µã‹ã‚‰è·é›¢ã‚’å–å¾—
+    int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//’´‰¹”gƒZƒ“ƒT‚©‚ç‹——£‚ğæ“¾
     
-    while(distance>30){//ã‚²ãƒ¼ãƒˆã®ç›´å‰ã¾ã§é€²ã‚€ã‚ˆ
+    while(distance>30){//ƒQ[ƒg‚Ì’¼‘O‚Ü‚Åi‚Ş‚æ
         systick_wait_ms(100U);
     	display_goto_xy(0,2); display_int(distance, 6); display_update();
-        distance=ecrobot_get_sonar_sensor(PORT_SONAR);//è¶…éŸ³æ³¢ã‚»ãƒ³ã‚µã‹ã‚‰è·é›¢ã‚’å–å¾—
+        distance=ecrobot_get_sonar_sensor(PORT_SONAR);//’´‰¹”gƒZƒ“ƒT‚©‚ç‹——£‚ğæ“¾
     }
-    sound(500,100,100);//éŸ³ã‚’å‡ºã—ã¦çŸ¥ã‚‰ã›ã‚‹ã‚ˆ
-    int gate_distance=distance;//ã‚²ãƒ¼ãƒˆã®ä½ç½®ã‚’æŠŠæ¡
+    sound(500,100,100);//‰¹‚ğo‚µ‚Ä’m‚ç‚¹‚é‚æ
+    int gate_distance=odd_distance;//ƒQ[ƒg‚ÌˆÊ’u‚ğ”cˆ¬
     
-    int seesaw_distance=300;//ã‚²ãƒ¼ãƒˆã‹ã‚‰ã‚·ãƒ¼ã‚½ãƒ¼ã¾ã§ã®è·é›¢[cm]
-    cmd_forward = 60; //é€Ÿåº¦ã®å¤‰æ›´
-    while(-(odd_distance-gate_distance) < seesaw_distance){//ã‚·ãƒ¼ã‚½ãƒ¼ã®ç›´å‰ã¾ã§é€²ã‚€
-    	display_goto_xy(0,2); display_int(-((odd_distance-gate_distance)), 6); display_update();
+    int seesaw_distance=650;//ƒQ[ƒg‚©‚çƒV[ƒ\[‚Ü‚Å‚Ì‹——£[cm]
+    cmd_forward = 85; //‘¬“x‚Ì•ÏX
+    while((odd_distance-gate_distance) < seesaw_distance){//ƒV[ƒ\[‚Ì’¼‘O‚Ü‚Åi‚Ş
+    	display_goto_xy(0,2); display_int(((odd_distance-gate_distance)), 6); display_update();
         systick_wait_ms(100U);
     }
-    sound(800,100,100);//éŸ³ã‚’å‡ºã—ã¦çŸ¥ã‚‰ã›ã‚‹ã‚ˆ
-    seesaw_distance=odd_distance;//ã‚·ãƒ¼ã‚½ãƒ¼ã®ä½ç½®ã‚’æŠŠæ¡
+    sound(800,100,100);//‰¹‚ğo‚µ‚Ä’m‚ç‚¹‚é‚æ
+    seesaw_distance=odd_distance;//ƒV[ƒ\[‚ÌˆÊ’u‚ğ”cˆ¬
     
-    while((odd_distance-seesaw_distance)<100){//ã‚·ãƒ¼ã‚½ãƒ¼ã®ä¸­å¿ƒã¾ã§é€²ã‚€
+    while((odd_distance-seesaw_distance)<200){//ƒV[ƒ\[‚Ì’†S‚Ü‚Åi‚Ş
         systick_wait_ms(100U);  
     }
-    sound(1200,100,100);//éŸ³ã‚’å‡ºã—ã¦çŸ¥ã‚‰ã›ã‚‹ã‚ˆ
     
-    cmd_forward=0;
-    systick_wait_ms(3000U);//è‹¦ã—ã¿ã®å¾—ç‚¹ç‹™ã„
     cmd_forward=30;
-    sound(1600,100,100);//éŸ³ã‚’å‡ºã—ã¦çŸ¥ã‚‰ã›ã‚‹ã‚ˆ
+    sound(1600,100,100);//‰¹‚ğo‚µ‚Ä’m‚ç‚¹‚é‚æ
     
-    int centor_distance=odd_distance;//ä¸­å¿ƒã®ä½ç½®ã‚’æŠŠæ¡
-    while((odd_distance-centor_distance)<200){//ã‚·ãƒ¼ã‚½ãƒ¼ã‚’ä¸‹ã‚Šã‚‹ã¾ã§é€²ã‚€
+    int centor_distance=odd_distance;//’†S‚ÌˆÊ’u‚ğ”cˆ¬
+    while((odd_distance-centor_distance)<400){//ƒV[ƒ\[‚ğ‰º‚è‚é‚Ü‚Åi‚Ş
         systick_wait_ms(100U); 
     }
-    sound(2000,100,100);//éŸ³ã‚’å‡ºã—ã¦çŸ¥ã‚‰ã›ã‚‹ã‚ˆ
+    sound(2000,100,100);//‰¹‚ğo‚µ‚Ä’m‚ç‚¹‚é‚æ
 
-    cmd_forward=60;
-    int edge_distance=odd_distance;//ã‚·ãƒ¼ã‚½ãƒ¼ã®ç«¯ã®ä½ç½®ã‚’æŠŠæ¡
+    cmd_forward=70;
+    int edge_distance=odd_distance;//ƒV[ƒ\[‚Ì’[‚ÌˆÊ’u‚ğ”cˆ¬
 	
     while((odd_distance-edge_distance)<600){
       systick_wait_ms(100U);
     }
+	kp = 0.65;
+    ki = 0.00001;
+    kd = 14.000;
+	cmd_forward=30;
 }
 
 TASK(Task_Background)
@@ -309,16 +311,16 @@ TASK(Task_Background)
 	
   trace_mode = TRACE_ON;
 	
-	//ã“ã“ã¾ã§æº–å‚™
+	//‚±‚±‚Ü‚Å€”õ
 	
-	cmd_forward = 0;
+	cmd_forward = 30;
 	kp = 1.35;
     ki = 0.00001;
     kd = 14.000;
 	
 	systick_wait_ms(2000U);
 	
-	seesaw();//ã‚·ãƒ¼ã‚½ãƒ¼é–¢æ•°
+	seesaw();//ƒV[ƒ\[ŠÖ”
 	
 	while(1){
 		systick_wait_ms(300U);
@@ -345,7 +347,7 @@ TASK(Task_Background)
 	
 	 while(sonar_distance > 30){
     systick_wait_ms(300U);
-	 //éˆ´æœ¨é–¢æ•°
+	 //—é–ØŠÖ”
   }
 */
 }
