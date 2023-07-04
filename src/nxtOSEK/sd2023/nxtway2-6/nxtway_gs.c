@@ -1,4 +1,4 @@
-/* Linetrace program
+ /* Linetrace program
   PID control
   stanging start with tail bar
   */
@@ -117,22 +117,12 @@ const float wheel_dia = 85.0;
 const float tread = 163;
 float odd_distance;
 float robot_a;
-int a;
-double b;
-int c;
-int d;
-
 void
 oddmetry(void){
   int theta_r = nxt_motor_get_count(PORT_MOTOR_R);
   int theta_l = nxt_motor_get_count(PORT_MOTOR_L);
   odd_distance =((theta_r + theta_l) * 0.5 * 0.008726 * wheel_dia);
   robot_a = (theta_r - theta_l) * wheel_dia / tread;
-	if(c == 4 && ((d % 5) == 0 )){
-		b +=robot_a;
-		a++;
-		ecrobot_sound_tone(1200,100,50);
-	}
 }
 
 float position_x = 0.0;
@@ -381,17 +371,18 @@ TASK(Task_Background)
 	kp = 0.65;
     ki = 0.00001;
     kd = 14.000;
-  systick_wait_ms(9000U);
-	kp = 0.90;
+	
+  systick_wait_ms(9000U);//9000
+	kp = 0.90;//0.90
     ki = 0.00001;
     kd = 14.000;
-	 cmd_forward = 122;
+	 cmd_forward = 120;//122
  	systick_wait_ms(11000U);
 	
-	trace_target = 480;
-	 cmd_forward = 40;
-	kp = 1.25;
-    ki = 0.00001;
+	//trace_target = 480;
+	 cmd_forward = 45;//42
+	kp = 1.30;
+    ki = 0.00015;//10
     kd = 14.000;
  	systick_wait_ms(600000U);
 	
