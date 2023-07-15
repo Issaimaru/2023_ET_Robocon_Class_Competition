@@ -8,7 +8,7 @@
 #include "balancer.h"
 #include "nxt_config.h"
 
-// �v���g�^�C�v�錾
+// �v���g�^�C�v�錾
 void wait_touch(int);
 void light_calibration(void);
 void trace_control(void);
@@ -119,9 +119,9 @@ int trace_target;
 void
 trace_control(){
   int bright;
-  float kp = 1.2;
-  float ki = 0.0194;
-  float kd = 14.48;
+  float kp =7.38;
+  float ki = 0.000002346;
+  float kd = 44.6625;
   int err_p,err_d;
   static int err_int = 0;
   static int err_old = 0;
@@ -172,17 +172,55 @@ TASK(Task_100ms)
   TerminateTask(); 
 }
 
+void sound(int freq,int duration,int volume){//範囲 31-2100[Hz]，256(2.56[sec])，0-100
+    ecrobot_sound_tone(freq,duration,volume); //音を出すよ
+}
+
+void seesaw(){
+    int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//超音波センサから距離を取得
+    
+    while(distance>30){//ゲートの直前まで進むよ
+        systick_wait_ms(100U);
+        distance=ecrobot_get_sonar_sensor(PORT_SONAR);//超音波センサから距離を取得
+    }
+    sound(500,100,100);//音を出して知らせるよ
+    int gate_distance=distance;//ゲートの位置を把握
+    
+    int seesaw_distance=700;//ゲートからシーソーまでの距離[cm]
+    cmd_forward = 60; //速度の変更
+    while((odd_distance-gate_distance) < seesaw_distance){//シーソーの直前まで進む
+        systick_wait_ms(100U);
+    }
+    sound(800,100,100);//音を出して知らせるよ
+    seesaw_distance=odd_distance;//シーソーの位置を把握
+    
+    while((odd_distance-seesaw_distance)<100){//シーソーの中心まで進む
+        systick_wait_ms(100U);  
+    }
+    sound(1200,100,100);//音を出して知らせるよ
+    
+    cmd_forward=0;
+    systick_wait_ms(3000U);//苦しみの得点狙い
+    cmd_forward=30;
+    sound(1600,100,100)//音を出して知らせるよ
+    
+    int centor_distance=odd_distance;//中心の位置を把握
+    while((odd_distance-centor_distance)<200){//シーソーを下りるまで進む
+        systick_wait_ms(100U); 
+    }
+    sound(2000,100,100)//音を出して知らせるよ
+
+    cmd_forward=60;
+    int edge_distance=odd_distance;//シーソーの端の位置を把握
+    while((odd_distance-edge_distance)<600){
+      systick_wait_ms(100U);
+    }
+}
+
 TASK(Task_Background)
 {
   display_clear(1);
-
-  trace_mode = TRACE_OFF;
-  tail_target = 0;
-  systick_wait_ms(2000U);
-  cmd_forward = 0;
-
   light_calibration();
-  tail_target = 109;
 
   wait_touch(500);
 
@@ -190,15 +228,9 @@ TASK(Task_Background)
   nxtway_gs_mode = INIT_MODE;
   systick_wait_ms(1000U);
 
-  tail_target = 0;
-
   trace_mode = TRACE_ON;
 
-  cmd_forward = 20;
-  systick_wait_ms(2000U); 
-
-  cmd_forward = 60;
-  systick_wait_ms(20000U);
+  seesaw();//シーソーを渡る
 
   while(1){
     systick_wait_ms(500U);

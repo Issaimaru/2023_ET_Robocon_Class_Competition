@@ -10,7 +10,7 @@
 #include "nxt_config.h"
 #include "math.h"
 
-// �v���g�^�C�v�錾
+// プロトタイプ宣言
 void wait_touch(int);
 void light_calibration(void);
 void trace_control(void);
@@ -424,7 +424,7 @@ TASK(Task_Background)
 	
 	Groping();//担当者:勝田，竹内
 	
-
+  Limbo();//担当者:竹内，赤祖父
 
 	while(true){
 		systick_wait_ms(30);

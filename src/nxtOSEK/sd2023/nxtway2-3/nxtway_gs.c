@@ -107,26 +107,23 @@ void sound(int freq,int duration,int volume){//範囲 31-2100[Hz]，256(2.56[sec
     ecrobot_sound_tone(freq,duration,volume); //音を出すよ
 }
 
-
 void seesaw(){
-    " This program is created by Takeuchi Issei"
     int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//超音波センサから距離を取得
     
     while(distance>30){//ゲートの直前まで進むよ
         systick_wait_ms(100U);
-    }
-    sound(2000,100,100);
-    int gate_distance=distance;//ゲートの距離を把握
-    
-    int seesaw_distance=700;//ゲートからシーソーまでの距離[cm]
-    cmd_forward = 60; //速度
-    systick_wait_ms(5000U);
-    while((odd_distance-gate_distance) < seesaw_distance){//シーソーの直前まで進む
-        systick_wait_ms(1000U);
         distance=ecrobot_get_sonar_sensor(PORT_SONAR);//超音波センサから距離を取得
     }
+    sound(2000,100,100);//音を出して知らせるよ
+    int gate_distance=distance;//ゲートの位置を把握
+    
+    int seesaw_distance=700;//ゲートからシーソーまでの距離[cm]
+    cmd_forward = 60; //速度の変更
+    while((odd_distance-gate_distance) < seesaw_distance){//シーソーの直前まで進む
+        systick_wait_ms(100U);
+    }
     sound(800,100,100);//音を出して知らせるよ
-    seesaw_distance=odd_distance;//シーソーの距離を把握
+    seesaw_distance=odd_distance;//シーソーの位置を把握
     
     while((odd_distance-seesaw_distance)<100){//シーソーの中心まで進む
         systick_wait_ms(100U);  
@@ -138,11 +135,17 @@ void seesaw(){
     cmd_forward=30;
     sound(1000,100,100)//音を出して知らせるよ
     
-    int centor_distance=odd_distance;//中心の距離を把握
-    while((odd_distance-centor_distance)<200){
-        systick_wait_ms(1000U); 
+    int centor_distance=odd_distance;//中心の位置を把握
+    while((odd_distance-centor_distance)<200){//シーソーを下りるまで進む
+        systick_wait_ms(100U); 
     }
-    sound(1000
+    sound(1000,100,100)//音を出して知らせるよ
+
+    cmd_forward=60;
+    int edge_distance=odd_distance;//シーソーの端の位置を把握
+    while((odd_distance-edge_distance)<600){
+      systick_wait_ms(100U);
+    }
 }
 
 
