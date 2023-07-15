@@ -318,33 +318,48 @@ void seesaw(){//status:動作確認済み
 	cmd_forward=30;
 }
 
-void Groping(){//status:動作確認未完了
-	systick_wait_ms(1000U);
-	
-	cmd_forward=15;
-	
-	for(int i=0;i<5;i++){
-		cmd_forward*=-1;
+void Groping(){
+  int distance=ecrobot_get_sonar_sensor(PORT_SONAR);
+	while(distance>150){
+    int distance=ecrobot_get_sonar_sensor(PORT_SONAR);
+    systick_wait_ms(30U);
+  }
+    
+    sound(800,100,100);
+
+		nxt_motor_set_count(PORT_MOTOR_L,0);
+		nxt_motor_set_count(PORT_MOTOR_R,0);
+		position_x = 0.0;
+		position_y = 0.0;
+		cmd_forward = 30;
 		systick_wait_ms(1000U);
-	}
-	sound(1600,100,100);
+		ecrobot_sound_tone(700U,500U,50U);
 	
+	systick_wait_ms(1800U);
+	float robot_a1 = atan((position_y)/(position_x));
+	ecrobot_sound_tone(500U,500U,50U);
+	
+	systick_wait_ms(1800U);
+	float robot_a2 = atan((position_y)/(position_x));
+	ecrobot_sound_tone(600U,500U,50U);
+	
+	systick_wait_ms(1800U);
+	float robot_a3 = atan((position_y)/(position_x));
+	ecrobot_sound_tone(700U,500U,50U);
+
 	trace_mode = TRACE_OFF;
+	direction_target = 0;
+	robot_a = ((robot_a1)+(robot_a2)+(robot_a3))/3.0;
+	direction_mode = DIRECTION_ON;
+	systick_wait_ms(500U);
+	cmd_forward = 30;
+	odd_distance = 0.0;
 	
-	cmd_forward=120;
+	systick_wait_ms(11800U);
 	
-	int group_distance=odd_distance;
-	while((odd_distance-group_distance)<700){//�����������Œ���
-		systick_wait_ms(30U);
-	}
-	sound(1600,100,100);
-	
-	kp = 0.65;
-    ki = 0.00001;
-    kd = 14.000;
-	cmd_forward=30;
-	
+	ecrobot_sound_tone(700U,500U,50U);
 	trace_mode = TRACE_ON;
+	cmd_forward = 30;
 }
 
 void Limbo(){
