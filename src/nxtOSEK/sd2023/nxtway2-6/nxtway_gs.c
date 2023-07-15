@@ -238,44 +238,76 @@ TASK(Task_100ms)
   TerminateTask(); 
 }
 
-void sound(int freq,int duration,int volume){//範囲 31-2100[Hz]，256(2.56[sec])，0-100
-    ecrobot_sound_tone(freq,duration,volume); //音を出すよ
+void sound(int freq,int duration,int volume){//�͈� 31-2100[Hz]�C256(2.56[sec])�C0-100
+    ecrobot_sound_tone(freq,duration,volume); //�����o����
 }
 
-void seesaw(){
-    int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//超音波センサから距離を取得
+void LineTrace(){//status:動作確認済み
+  	cmd_forward = 30;
+	kp = 1.35;
+    ki = 0.00001;
+    kd = 14.000;
+	
+	systick_wait_ms(2000U);
+
+  cmd_forward = 60;
+	kp = 0.65;
+    ki = 0.00001;
+    kd = 14.000;
+	
+  systick_wait_ms(9000U);//9000
+	kp = 0.90;//0.90
+    ki = 0.00001;
+    kd = 14.000;
+	 cmd_forward = 120;//122
+ 	systick_wait_ms(11000U);
+	
+	//trace_target = 480;
+	 cmd_forward = 42;//42
+	kp = 1.30;
+    ki = 0.00013;//10
+    kd = 13.000;
+	systick_wait_ms(5000U);
+}
+
+void seesaw(){//status:動作確認済み
+    int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//�����g�Z���T���狗�����擾
     
-    while(distance>30){//ゲートの直前まで進むよ
+    while(distance>30){//�Q�[�g�̒��O�܂Ői�ނ�
         systick_wait_ms(100U);
     	display_goto_xy(0,2); display_int(distance, 6); display_update();
-        distance=ecrobot_get_sonar_sensor(PORT_SONAR);//超音波センサから距離を取得
+        distance=ecrobot_get_sonar_sensor(PORT_SONAR);//�����g�Z���T���狗�����擾
     }
-    sound(500,100,100);//音を出して知らせるよ
-    int gate_distance=odd_distance;//ゲートの位置を把握
+    sound(500,100,100);//�����o���Ēm�点���
+    int gate_distance=odd_distance;//�Q�[�g�̈ʒu��c��
     
-    int seesaw_distance=650;//ゲートからシーソーまでの距離[cm]
-    cmd_forward = 85; //速度の変更
-    while((odd_distance-gate_distance) < seesaw_distance){//シーソーの直前まで進む
+	kp = 0.65;
+    ki = 0.00001;
+    kd = 14.000;
+	
+    int seesaw_distance=650;//�Q�[�g����V�[�\�[�܂ł̋���[cm]
+    cmd_forward = 85; //���x�̕ύX
+    while((odd_distance-gate_distance) < seesaw_distance){//�V�[�\�[�̒��O�܂Ői��
     	display_goto_xy(0,2); display_int(((odd_distance-gate_distance)), 6); display_update();
         systick_wait_ms(100U);
     }
   
-    sound(800,100,100);//音を出して知らせるよ
-    seesaw_distance=odd_distance;//シーソーの位置を把握
+    sound(800,100,100);//�����o���Ēm�点���
+    seesaw_distance=odd_distance;//�V�[�\�[�̈ʒu��c��
     
-    while((odd_distance-seesaw_distance)<200){//シーソーの中心まで進む
+    while((odd_distance-seesaw_distance)<200){//�V�[�\�[�̒��S�܂Ői��
         systick_wait_ms(100U);  
     }
     cmd_forward=30;
-    sound(1600,100,100);//音を出して知らせるよ
+    sound(1600,100,100);//�����o���Ēm�点���
     
-    int centor_distance=odd_distance;//中心の位置を把握
-    while((odd_distance-centor_distance)<400){//シーソーを下りるまで進む
+    int centor_distance=odd_distance;//���S�̈ʒu��c��
+    while((odd_distance-centor_distance)<400){//�V�[�\�[�������܂Ői��
         systick_wait_ms(100U); 
     }
-    sound(2000,100,100);//音を出して知らせるよ
+    sound(2000,100,100);//�����o���Ēm�点���
     cmd_forward=70;
-    int edge_distance=odd_distance;//シーソーの端の位置を把握
+    int edge_distance=odd_distance;//�V�[�\�[�̒[�̈ʒu��c��
 	
     while((odd_distance-edge_distance)<600){
       systick_wait_ms(100U);
@@ -286,47 +318,78 @@ void seesaw(){
 	cmd_forward=30;
 }
 
-void Groping(){
-	if(sonar_distance<=70){
-		nxt_motor_set_count(PORT_MOTOR_L,0);
-		nxt_motor_set_count(PORT_MOTOR_R,0);
-		position_x = 0.0;
-		position_y = 0.0;
-		cmd_forward = 30;
+void Groping(){//status:動作確認未完了
+	systick_wait_ms(1000U);
+	
+	cmd_forward=15;
+	
+	for(int i=0;i<5;i++){
+		cmd_forward*=-1;
 		systick_wait_ms(1000U);
-		ecrobot_sound_tone(700U,500U,50U);
 	}
+	sound(1600,100,100);
 	
-	systick_wait_ms(1800U);
-	float robot_a1 = atan((position_y)/(position_x));
-	ecrobot_sound_tone(500U,500U,50U);
-	
-	systick_wait_ms(1800U);
-	float robot_a2 = atan((position_y)/(position_x));
-	ecrobot_sound_tone(600U,500U,50U);
-	
-	systick_wait_ms(1800U);
-	float robot_a3 = atan((position_y)/(position_x));
-	ecrobot_sound_tone(700U,500U,50U);
-	
-	while(sonar_distance>30){
-		systick_wait_ms(200U);
-	}
-	
-	ecrobot_sound_tone(1500U,500U,50U);
 	trace_mode = TRACE_OFF;
-	direction_target = 0;
-	robot_a = ((robot_a1)+(robot_a2)+(robot_a3))/3.0;
-	direction_mode = DIRECTION_ON;
-	systick_wait_ms(500U);
-	cmd_forward = 30;
-	odd_distance = 0.0;
 	
-	systick_wait_ms(11800U);
+	cmd_forward=120;
 	
-	ecrobot_sound_tone(700U,500U,50U);
+	int group_distance=odd_distance;
+	while((odd_distance-group_distance)<700){//�����������Œ���
+		systick_wait_ms(30U);
+	}
+	sound(1600,100,100);
+	
+	kp = 0.65;
+    ki = 0.00001;
+    kd = 14.000;
+	cmd_forward=30;
+	
 	trace_mode = TRACE_ON;
-	cmd_forward = 30;
+}
+
+void Limbo(){
+  cmd_forward = 30;
+	systick_wait_ms(500U);
+  tail_target = 109;
+	while(sonar_distance > 30){
+		systick_wait_ms(500U);
+	}
+	
+	cmd_forward = 0;
+	systick_wait_ms(500U);
+	trace_mode = TRACE_OFF;
+	
+	nxtway_gs_mode = WAIT_MODE;
+	for(int i=109;i>=58;i-=3){
+		tail_target = i; systick_wait_ms(900U);
+	}//機体を傾ける
+
+  int limbo_distance=odd_distance;
+
+	trace_mode = TRACE_ON;
+	cmd_forward = 20;
+	
+	sound(900,100,50);
+	
+  while((odd_distance-limbo_distance)<600){
+    systick_wait_ms(30U);
+  }
+
+  sound(1600,100,100);
+
+  cmd_forward = 0;
+	systick_wait_ms(500U);
+	trace_mode = TRACE_OFF;
+
+  nxtway_gs_mode = WAIT_MODE;
+	for(int i=55;i<108;i+=5){
+		tail_target = i; systick_wait_ms(900U);
+	}//機体を元の角度に戻す
+
+  sound(900,100,50);
+
+  trace_mode = TRACE_ON;
+	cmd_forward = 0;
 }
 
 TASK(Task_Background)
@@ -353,161 +416,20 @@ TASK(Task_Background)
 	
   trace_mode = TRACE_ON;
 	
-	//ここまで準備
+	//ここからロボコン用の動作
+
+  LineTrace();//担当者:鈴木
+	 	
+	seesaw();//担当者:竹内
 	
-	cmd_forward = 30;
-	kp = 1.35;
-    ki = 0.00001;
-    kd = 14.000;
+	Groping();//担当者:勝田，竹内
 	
-	systick_wait_ms(2000U);
-	
-	seesaw();//シーソー関数
-	
-	while(1){
-		systick_wait_ms(300U);
+  Limbo();//担当者:竹内，赤祖父
+
+	while(true){
+		systick_wait_ms(30);
 	}
-
-  cmd_forward = 60;
-	kp = 0.65;
-    ki = 0.00001;
-    kd = 14.000;
-	
-  systick_wait_ms(9000U);//9000
-	kp = 0.90;//0.90
-    ki = 0.00001;
-    kd = 14.000;
-	 cmd_forward = 120;//122
- 	systick_wait_ms(11000U);
-	
-	//trace_target = 480;
-	 cmd_forward = 45;//42
-	kp = 1.30;
-    ki = 0.00015;//10
-    kd = 14.000;
- 	systick_wait_ms(600000U);
-	
-	 while(sonar_distance > 30){
-    systick_wait_ms(300U);
-	 //鈴木関数
-  }
 }
-    /* while(sonar_distance>30){
-     	 systick_wait_ms(300U);
-  } 
-   	kp = 1.20;
-    ki = 0.00001;
-    kd = 8.000;
-	cmd_forward=120;
-	systick_wait_ms(2000U);
-	cmd_forward=50;
-	systick_wait_ms(1000U);
-	cmd_forward=15;	
-	systick_wait_ms(1000U);
-	cmd_forward=40;	
-	systick_wait_ms(5000U);
-	systick_wait_ms(1000U);
-
-  tail_target = 0;n=-70;
-
-  kp = 1.5500;  ki = 0.00007; kd = 3.10000;
-	
-  cmd_forward = 20;
- 
-   
-	 while(sonar_distance > 30){
-    systick_wait_ms(300U);
-  } 
-	cmd_forward = 25;
-	 kp = 1.100;  ki = 0.00001; kd = 1.250000;
-	
-	 while(sonar_distance > 25){
-    systick_wait_ms(300U);
-  } 
-	
-	 trace_mode = TRACE_OFF;
-	 cmd_forward = -25;
-	tail_target = 75; n=75;
-   systick_wait_ms(500U);
-
-	nxtway_gs_mode = WAIT_MODE;
-	
-	nxt_motor_set_speed(PORT_MOTOR_L, 0, 1);
-    nxt_motor_set_speed(PORT_MOTOR_R, 0, 1);
-	 systick_wait_ms(1000U);	
-	
-	 tail_target = 65; n=80;
-	systick_wait_ms(500U);
-		
-	tail_target = 58; n=65;
-	 systick_wait_ms(1000U);
-	
-    nxt_motor_set_speed(PORT_MOTOR_L, 48, 1);
-    nxt_motor_set_speed(PORT_MOTOR_R, 40, 1);
-	systick_wait_ms(500U);
-	
-	nxt_motor_set_speed(PORT_MOTOR_L, 46, 1);
-    nxt_motor_set_speed(PORT_MOTOR_R, 40, 1);
-	systick_wait_ms(2000U);
-	
-	nxt_motor_set_speed(PORT_MOTOR_L, 0, 1);
-    nxt_motor_set_speed(PORT_MOTOR_R, 0, 1);
-	 tail_target = 90; n=75;
-	systick_wait_ms(1000U);	
-	 tail_target = 95; n=75;
-	systick_wait_ms(1000U);
-		 tail_target = 100; n=65;
-	systick_wait_ms(1000U);
-tail_target = 101; n=65;
-	systick_wait_ms(1000U);	nxtway_gs_mode = INIT_MODE;
-	trace_mode = TRACE_ON;
-	systick_wait_ms(1000U);
-	
-	cmd_forward = 0;
-	tail_target = 0; n=-65;
-	 kp = 0.000;  ki = 0.000; kd = 0.000;
-    systick_wait_ms(1000U);
-	 kp = 1.200;  ki = 0.00001; kd = 5.000;
-	 cmd_forward = 30;
-   systick_wait_ms(2000U);
-	
-	 while(sonar_distance >25){
-    systick_wait_ms(300U);
-  } 
-	cmd_forward = 25;
-	 kp = 1.100;  ki = 0.00007; kd = 1.20000;
-
-
-  nxt_motor_set_count(PORT_MOTOR_L, 0);
-  nxt_motor_set_count(PORT_MOTOR_R, 0);
-  position_x = 0.0;
-  position_y = 0.0;
-  
-  cmd_forward = 30;
-  systick_wait_ms(300U); 
-
-  while(sonar_distance > 30){
-    systick_wait_ms(100U);
-  }	
-  systick_wait_ms(100U);	
-  while(odd_distance < 100){
-    systick_wait_ms(100U);
-  }	
-  cmd_forward = 0;
-  trace_mode = TRACE_OFF;
-  direction_target = 0;
-  direction_mode = DIRECTION_ON;
-  cmd_forward = 40;
-  while(odd_distance < 12000){
-    systick_wait_ms(100U);
-  }
-  cmd_forward = 0;
-  direction_target = 0;
-  while(1){
-    systick_wait_ms(300U);
-  }
-
-}*/
 
 void wait_touch(int freq){
   while(ecrobot_get_touch_sensor(PORT_TOUCH)==0){systick_wait_ms(100U);}  //wait for pushing switch
