@@ -242,7 +242,7 @@ void sound(int freq,int duration,int volume){//??? 31-2100[Hz]?C256(2.56[sec])?C
     ecrobot_sound_tone(freq,duration,volume); //?????o????
 }
 
-void LineTrace(){//status:����m�F�ς�
+inline void LineTrace(){//status:����m�F�ς�
   	cmd_forward = 30;
 	kp = 1.35;
     ki = 0.00001;
@@ -270,7 +270,7 @@ void LineTrace(){//status:����m�F�ς�
 	systick_wait_ms(5000U);
 }
 
-void seesaw(){//status:����m�F�ς�
+inline void seesaw(){//status:����m�F�ς�
     int distance=ecrobot_get_sonar_sensor(PORT_SONAR);//?????g?Z???T???��?????��
     
     while(distance>30){//?Q?[?g????O???i???
@@ -318,7 +318,7 @@ void seesaw(){//status:����m�F�ς�
 	cmd_forward=30;
 }
 
-void Groping(){//status:����m�F������
+inline void Groping(){//status:����m�F������
 	systick_wait_ms(950U);
 	
 	cmd_forward=15;
@@ -347,7 +347,7 @@ void Groping(){//status:����m�F������
 	trace_mode = TRACE_ON;
 }
 
-void Limbo(){
+inline void Limbo(){
   cmd_forward = 30;
 	systick_wait_ms(500U);
   tail_target = 108;
